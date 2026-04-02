@@ -58,8 +58,36 @@ def compute_max_value(values, a, b):
             else:
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
 
-    # Return best value
-    return dp[n][m]
+    # Return DP table
+    return dp
+
+
+def reconstruct_subsequence(dp, values, a, b):
+    # Start from end
+    i = len(a)
+    j = len(b)
+    result = []
+
+    # Backtrack solution path
+    while i > 0 and j > 0:
+        if a[i - 1] == b[j - 1]:
+            match_value = dp[i - 1][j - 1] + values[a[i - 1]]
+            if dp[i][j] == match_value:
+                result.append(a[i - 1])
+                i -= 1
+                j -= 1
+            elif dp[i][j] == dp[i - 1][j]:
+                i -= 1
+            else:
+                j -= 1
+        elif dp[i][j] == dp[i - 1][j]:
+            i -= 1
+        else:
+            j -= 1
+
+    # Reverse answer list
+    result.reverse()
+    return "".join(result)
 
 
 def main():
@@ -70,10 +98,13 @@ def main():
 
     input_file = sys.argv[1]
     values, a, b = read_input(input_file)
-    answer = compute_max_value(values, a, b)
+
+    dp = compute_max_value(values, a, b)
+    subsequence = reconstruct_subsequence(dp, values, a, b)
 
     # Print final answer
-    print(answer)
+    print(dp[len(a)][len(b)])
+    print(subsequence)
 
 
 if __name__ == "__main__":
